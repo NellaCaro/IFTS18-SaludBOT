@@ -20,7 +20,8 @@ def mostrar_mensajes():
         else:
             saludo = "¡Buenas noches!"
         mostrar_mensaje("bot", f"{saludo} Soy **SaludBOT**, el asistente virtual de la **Clínica SanVida**. Estoy aquí para ayudarte a gestionar tus turnos y responder tus consultas.")
-        mostrar_mensaje("bot", "¿En qué puedo ayudarte hoy?")
         mostrar_mensaje("bot","Si tenes una urgencia, por favor llama al 0800-555-1234")
+        mostrar_mensaje("bot", "¿En qué puedo ayudarte hoy?")
+        
         
         st.session_state.bienvenida_mostrada = True
