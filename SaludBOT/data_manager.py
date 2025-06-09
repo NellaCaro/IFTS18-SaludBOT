@@ -90,3 +90,15 @@ def buscar_turnos_por_identificacion(valor):
     df = pd.read_csv(TURNOS_CSV)
     resultado = df[(df["dni"].astype(str) == str(valor)) | (df["email"].str.lower() == str(valor).lower())]
     return resultado.to_dict(orient="records")
+
+def buscar_reclamos_por_identificacion(valor):
+    if not os.path.exists(RECLAMOS_CSV):
+        return []
+    df = pd.read_csv(RECLAMOS_CSV)
+    return df[(df["dni"].astype(str) == str(valor)) | (df["email"].str.lower() == str(valor).lower())].to_dict(orient="records")
+
+def buscar_clases_rcp_por_identificacion(valor):
+    if not os.path.exists(RCP_CSV):
+        return []
+    df = pd.read_csv(RCP_CSV)
+    return df[(df["dni"].astype(str) == str(valor)) | (df["email"].str.lower() == str(valor).lower())].to_dict(orient="records")

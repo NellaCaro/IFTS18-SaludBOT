@@ -7,12 +7,22 @@ def manejar_estado():
     estado = st.session_state.estado
 
     if estado == "inicio":
-        pass
+        hora = datetime.now().hour
+        if 6 <= hora < 13:
+            saludo = "¡Buenos días!"
+        elif 13 <= hora < 20:
+            saludo = "¡Buenas tardes!"
+        else:
+            saludo = "¡Buenas noches!"
+
+        if not st.session_state.get("bienvenida_mostrada", False):
+            mostrar_mensaje("bot", f"{saludo} Soy SaludBOT y estoy disponible para ayudarte.")
+            st.session_state.bienvenida_mostrada = True
 
     elif estado == "menu":
         st.markdown("""
             <h3 style='text-align: center;'>🤖 SaludBOT | ¿Cómo puedo ayudarte hoy?</h3>
-            <p style='text-align: center;'>🍺 <em>Clínica SanVida - Atención 24/7</em></p>
+            <p style='text-align: center;'><em>Clínica SanVida - Atención 24/7</em></p>
         """, unsafe_allow_html=True)
 
         opciones = [
@@ -20,7 +30,7 @@ def manejar_estado():
             "📋 Turno para estudios médicos",
             "❤️ Clases de RCP",
             "⚠️ Hacer un reclamo",
-            "📂 Ver mis turnos"
+            "📂 Ver mis registros"
         ]
         opcion = st.radio("Seleccioná una opción:", opciones)
 
@@ -34,9 +44,10 @@ def manejar_estado():
                 st.session_state.estado = "rcp_info"
             elif "reclamo" in opcion:
                 st.session_state.estado = "reclamo_tipo"
-            elif "Ver mis turnos" in opcion:
+            elif "Ver mis registros" in opcion:
                 st.session_state.estado = "consulta_turnos"
             st.rerun()
+
 
     elif estado == "turno_especialidad":
         especialidad = st.radio("¿Para qué especialidad querés el turno?", ["Clínica médica", "Pediatría", "Ginecología"])
@@ -149,22 +160,41 @@ def manejar_estado():
                 st.rerun()
 
     elif estado == "consulta_turnos":
-        st.markdown("### 🔍 Consultá tus turnos agendados")
+        st.markdown("### 🔍 Consultá tus registros agendados")
         dato = st.text_input("Ingresá tu DNI o correo electrónico:")
 
-        if st.button("📂 Buscar mis turnos"):
+        if st.button("📂 Buscar mis registros"):
             if dato:
+                from data_manager import buscar_turnos_por_identificacion
+                from data_manager import buscar_reclamos_por_identificacion
+                from data_manager import buscar_clases_rcp_por_identificacion
+
                 turnos = buscar_turnos_por_identificacion(dato)
+                reclamos = buscar_reclamos_por_identificacion(dato)
+                clases = buscar_clases_rcp_por_identificacion(dato)
+
                 if turnos:
-                    st.success(f"🔎 Se encontraron {len(turnos)} turno(s).")
-                    mostrar_mensaje("bot", f"🔎 Se encontraron {len(turnos)} turno(s) para el dato ingresado.")
+                    st.markdown("#### 📅 Turnos:")
                     for i, t in enumerate(turnos, 1):
-                        st.markdown(f"**Turno {i}:** {t['especialidad']} - {t['fecha']} a las {t['hora']} hs - {t['nombre']}")
-                else:
-                    st.info("🤖 No se encontraron turnos con ese dato.")
+                        st.markdown(f"- **{t['especialidad']}** el {t['fecha']} a las {t['hora']} hs – {t['nombre']}")
+
+                if reclamos:
+                    st.markdown("#### 📝 Reclamos:")
+                    for r in reclamos:
+                        st.markdown(f"- {r['tipo']} – {r['descripcion']} (Caso: {r['nro_caso']})")
+
+                if clases:
+                    st.markdown("#### ❤️ Clases de RCP:")
+                    for c in clases:
+                        st.markdown(f"- {c['fecha_clase']} a las {c['hora']} hs – {c['nombre']}")
+
+                if not turnos and not reclamos and not clases:
+                    st.info("🤖 No se encontraron registros con ese dato.")
+
         if st.button("🔁 Volver al menú principal"):
             st.session_state.estado = "menu"
             st.rerun()
+
 
     elif estado == "reiniciar":
         st.markdown("¿Querés hacer otra consulta?")
