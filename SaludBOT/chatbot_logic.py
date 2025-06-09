@@ -62,7 +62,7 @@ def manejar_estado():
             st.session_state.estado = "turno_horario"
             st.rerun()
 
-    elif estado == "turno_hora":
+    elif estado == "turno_horario":
         hora = st.radio("🕒 Seleccioná un horario:", ["10:00", "11:30", "13:00"])
         if st.button("📌 Confirmar horario"):
             mostrar_mensaje("user", hora)
