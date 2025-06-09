@@ -53,6 +53,56 @@ def manejar_estado():
             st.session_state.datos = {"especialidad": estudio}
             st.session_state.estado = "turno_fecha"
             st.rerun()
+    
+    elif estado == "reclamo_tipo":
+        if "reclamo_mensaje" not in st.session_state:
+            tipo = st.radio("Seleccioná el tipo de reclamo:", [
+                "Factura incorrecta",
+                "Consulta no realizada",
+                "Otro"
+            ], key="tipo_reclamo")
+            descripcion = st.text_area("Describí brevemente tu reclamo:", key="detalle_reclamo")
+
+            if st.button("📨 Enviar reclamo"):
+                if descripcion:
+                    mostrar_mensaje("user", f"{tipo} - {descripcion}")
+                    st.session_state.reclamo_mensaje = {
+                        "tipo": tipo,
+                        "descripcion": descripcion
+                    }
+                    st.rerun()
+
+        elif "reclamo_contacto" not in st.session_state:
+            nombre = st.text_input("🧑 Tu nombre", key="reclamo_nombre")
+            email = st.text_input("📧 Tu correo electrónico", key="reclamo_email")
+            telefono = st.text_input("📱 Tu número de contacto", key="reclamo_tel")
+
+            if st.button("📋 Confirmar datos de contacto"):
+                if nombre and email and telefono:
+                    st.session_state.reclamo_contacto = {
+                        "nombre": nombre,
+                        "email": email,
+                        "telefono": telefono
+                    }
+                    st.rerun()
+
+        else:
+            from data_manager import guardar_reclamo
+
+            datos = st.session_state.reclamo_contacto
+            reclamo = st.session_state.reclamo_mensaje
+            nro = f"RCL-{datetime.now().strftime('%H%M')}"
+
+            guardar_reclamo(reclamo, datos)
+
+            mostrar_mensaje("bot", f"""✅ Reclamo registrado como **{reclamo['tipo']}**.
+            📝 Detalle: {reclamo['descripcion']}
+            📌 Contacto: {datos['nombre']} - {datos['email']} - {datos['telefono']}
+            🆔 Número de caso: **{nro}**
+            Un representante se comunicará con vos a la brevedad.
+            """)
+            st.session_state.estado = "reiniciar"
+            st.rerun()
 
     elif estado == "turno_fecha":
         fecha = st.date_input("📅 Seleccioná el día del turno:", min_value=datetime.now().date())
