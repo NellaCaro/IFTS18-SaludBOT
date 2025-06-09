@@ -1,6 +1,7 @@
 import streamlit as st
 from datetime import datetime, timedelta
 from utils import mostrar_mensaje
+from data_manager import guardar_turno
 
 def manejar_estado():
     estado = st.session_state.estado
@@ -106,7 +107,8 @@ def manejar_estado():
                     d = st.session_state.datos
                     mostrar_mensaje("bot", f"✅ Turno confirmado para **{d['nombre']}**, con la especialidad **{d['especialidad']}** el **{d['fecha']}** a las **{d['horario']} hs**. Se enviará un recordatorio a tu correo electrónico: **{d['email']}**. Te esperamos en Clínica SanVida.")
 
-                    st.session_state.consultas_guardadas.append(st.session_state.datos.copy())
+                    guardar_turno(st.session_state.datos)
+        st.session_state.consultas_guardadas.append(st.session_state.datos.copy())
                     st.session_state.paciente_confirmado = True
                     st.session_state.estado = "reiniciar"
                     st.rerun()
@@ -220,7 +222,8 @@ def manejar_estado():
                     d = st.session_state.datos
                     mostrar_mensaje("bot", f"✅ Turno confirmado para **{d['nombre']}**, con la especialidad **{d['especialidad']}** el **{d['fecha']}** a las **{d['horario']} hs**. Se enviará un recordatorio a tu correo electrónico: **{d['email']}**. Te esperamos en Clínica SanVida.")
 
-                    st.session_state.consultas_guardadas.append(st.session_state.datos.copy())
+                    guardar_turno(st.session_state.datos)
+        st.session_state.consultas_guardadas.append(st.session_state.datos.copy())
                     st.session_state.paciente_confirmado = True
                     st.session_state.estado = "reiniciar"
                     st.rerun()
