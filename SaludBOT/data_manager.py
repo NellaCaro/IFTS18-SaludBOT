@@ -81,3 +81,12 @@ def obtener_turnos_por_dni_o_email(valor):
         return []
     df = pd.read_csv(TURNOS_CSV)
     return df[(df["dni"] == valor) | (df["email"] == valor)].to_dict(orient="records")
+
+def buscar_turnos_por_identificacion(valor):
+    """Devuelve turnos guardados por DNI o email"""
+    if not os.path.exists(TURNOS_CSV):
+        return []
+
+    df = pd.read_csv(TURNOS_CSV)
+    resultado = df[(df["dni"].astype(str) == str(valor)) | (df["email"].str.lower() == str(valor).lower())]
+    return resultado.to_dict(orient="records")
