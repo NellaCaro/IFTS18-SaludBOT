@@ -62,11 +62,11 @@ def manejar_estado():
             st.session_state.estado = "turno_horario"
             st.rerun()
 
-    elif estado == "turno_horario":
-        horario = st.radio("🕒 Seleccioná un horario:", ["10:00", "11:30", "13:00"])
+    elif estado == "turno_hora":
+        hora = st.radio("🕒 Seleccioná un horario:", ["10:00", "11:30", "13:00"])
         if st.button("📌 Confirmar horario"):
-            mostrar_mensaje("user", horario)
-            st.session_state.datos["horario"] = horario
+            mostrar_mensaje("user", hora)
+            st.session_state.datos["hora"] = hora
             st.session_state.estado = "turno_datos_paciente"
             st.rerun()
 
@@ -94,7 +94,7 @@ def manejar_estado():
                 guardar_turno(st.session_state.datos)
 
                 d = st.session_state.datos
-                mostrar_mensaje("bot", f"✅ Turno confirmado para **{d['nombre']}**, con la especialidad **{d['especialidad']}** el **{d['fecha']}** a las **{d['horario']} hs**. Se enviará un recordatorio a: **{d['email']}**")
+                mostrar_mensaje("bot", f"✅ Turno confirmado para **{d['nombre']}**, con la especialidad **{d['especialidad']}** el **{d['fecha']}** a las **{d['hora']} hs**. Se enviará un recordatorio a: **{d['email']}**")
                 st.session_state.estado = "reiniciar"
                 st.rerun()
 
@@ -106,8 +106,10 @@ def manejar_estado():
             if dato:
                 turnos = buscar_turnos_por_identificacion(dato)
                 if turnos:
+                    st.success(f"🔎 Se encontraron {len(turnos)} turno(s).")
+                    mostrar_mensaje("bot", f"🔎 Se encontraron {len(turnos)} turno(s) para el dato ingresado.")
                     for i, t in enumerate(turnos, 1):
-                        st.markdown(f"**Turno {i}:** {t['especialidad']} - {t['fecha']} a las {t['horario']} hs - {t['nombre']}")
+                        st.markdown(f"**Turno {i}:** {t['especialidad']} - {t['fecha']} a las {t['hora']} hs - {t['nombre']}")
                 else:
                     st.info("🤖 No se encontraron turnos con ese dato.")
         if st.button("🔁 Volver al menú principal"):
