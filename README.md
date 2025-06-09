@@ -72,4 +72,4 @@ SaludBOT/
 
 ## ✨ Créditos
 
-Proyecto educativo realizado como parte de la tecnicatura en IFTS 18 por Nella y colaboradores.
+Proyecto educativo realizado como parte de la tecnicatura en IFTS 18.
