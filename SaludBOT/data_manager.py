@@ -31,7 +31,7 @@ def guardar_turno(datos):
         "email": datos["email"],
         "especialidad": datos["especialidad"],
         "fecha": datos["fecha"],
-        "hora": datos["horario"],
+        "hora": datos["hora"],
         "timestamp": datetime.now().isoformat()
     }])
     if os.path.exists(TURNOS_CSV):
