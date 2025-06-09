@@ -15,35 +15,6 @@ SaludBOT es un asistente virtual conversacional desarrollado con Streamlit, dise
 
 ---
 
-## 🚀 ¿Cómo ejecutar el bot?
-
-1. Cloná el repo o descargá el ZIP y descomprimilo:
-
-```bash
-git clone https://github.com/tu-usuario/SaludBOT.git
-cd SaludBOT
-```
-
-2. Instalá las dependencias necesarias:
-
-```bash
-pip install -r requirements.txt
-```
-
-> Si no tenés `requirements.txt`, solo necesitás:
-
-```bash
-pip install streamlit pandas
-```
-
-3. Ejecutá la app con:
-
-```bash
-streamlit run app.py
-```
-
----
-
 ## 📁 Estructura del proyecto
 
 ```
@@ -59,14 +30,6 @@ SaludBOT/
         ├── reclamos.csv
         └── rcp.csv
 ```
-
----
-
-## 📂 Notas
-
-- Los archivos CSV se crean automáticamente la primera vez que se confirman datos.
-- Si desplegás en Streamlit Cloud, asegurate de tener permisos de escritura sobre `saludbot/data/`.
-- El bot no requiere bases de datos externas ni backend adicional.
 
 ---
 
