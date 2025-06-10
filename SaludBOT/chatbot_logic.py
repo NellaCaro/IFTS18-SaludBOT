@@ -87,11 +87,11 @@ def manejar_estado():
             guardar_reclamo(reclamo, datos)
 
             mostrar_mensaje("bot", f"""✅ Reclamo registrado como **{reclamo['tipo']}**.
-📝 Detalle: {reclamo['descripcion']}
-📌 Contacto: {datos['nombre']} - {datos['email']} - {datos['telefono']}
-🆔 Número de caso: **{nro}**
-Un representante se comunicará con vos a la brevedad.
-""")
+            📝 Detalle: {reclamo['descripcion']}
+            📌 Contacto: {datos['nombre']} - {datos['email']} - {datos['telefono']}
+            🆔 Número de caso: **{nro}**
+            Un representante se comunicará con vos a la brevedad.
+            """)
             st.session_state.estado = "reiniciar"
             st.rerun()
 
@@ -128,7 +128,7 @@ Un representante se comunicará con vos a la brevedad.
     
     elif estado == "rcp_info":
         if "rcp_info_mostrada" not in st.session_state:
-            mostrar_mensaje("bot", "❤️ La próxima clase de **RCP** será el **jueves 30 de mayo** en el **SUM de Clínica SanVida** a las **17:00 hs**. Aprenderás a asistir a una persona con paro cardiorrespiratorio, aplicar compresiones efectivas y utilizar un DEA.")
+            mostrar_mensaje("bot", "❤️ La próxima clase de **RCP** será el **jueves 12 de junio** en el **SUM de Clínica SanVida** a las **17:00 hs**. Aprenderás a asistir a una persona con paro cardiorrespiratorio, aplicar compresiones efectivas y utilizar un DEA.")
             st.session_state.rcp_info_mostrada = True
             st.rerun()
 
