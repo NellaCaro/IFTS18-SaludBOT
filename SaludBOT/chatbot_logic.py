@@ -1,7 +1,7 @@
 import streamlit as st
 from datetime import datetime
 from utils import mostrar_mensaje
-from data_manager import guardar_turno, buscar_turnos_por_identificacion
+from data_manager import guardar_turno, guardar_reclamo, buscar_turnos_por_identificacion, buscar_reclamos_por_identificacion, buscar_clases_rcp_por_identificacion
 
 def manejar_estado():
     estado = st.session_state.estado
@@ -48,23 +48,6 @@ def manejar_estado():
                 st.session_state.estado = "consulta_turnos"
             st.rerun()
 
-
-    elif estado == "turno_especialidad":
-        especialidad = st.radio("¿Para qué especialidad querés el turno?", ["Clínica médica", "Pediatría", "Ginecología"])
-        if st.button("📌 Confirmar especialidad"):
-            mostrar_mensaje("user", especialidad)
-            st.session_state.datos = {"especialidad": especialidad}
-            st.session_state.estado = "turno_fecha"
-            st.rerun()
-
-    elif estado == "estudios_tipo":
-        estudio = st.radio("¿Qué estudio necesitás?", ["Laboratorio general", "ECG", "Radiografía", "Ecografía", "Chequeo completo"])
-        if st.button("📈 Confirmar estudio"):
-            mostrar_mensaje("user", estudio)
-            st.session_state.datos = {"especialidad": estudio}
-            st.session_state.estado = "turno_fecha"
-            st.rerun()
-    
     elif estado == "reclamo_tipo":
         if "reclamo_mensaje" not in st.session_state:
             tipo = st.radio("Seleccioná el tipo de reclamo:", [
@@ -98,111 +81,72 @@ def manejar_estado():
                     st.rerun()
 
         else:
-            from data_manager import guardar_reclamo
-
             datos = st.session_state.reclamo_contacto
             reclamo = st.session_state.reclamo_mensaje
             nro = f"RCL-{datetime.now().strftime('%H%M')}"
-
             guardar_reclamo(reclamo, datos)
 
             mostrar_mensaje("bot", f"""✅ Reclamo registrado como **{reclamo['tipo']}**.
-            📝 Detalle: {reclamo['descripcion']}
-            📌 Contacto: {datos['nombre']} - {datos['email']} - {datos['telefono']}
-            🆔 Número de caso: **{nro}**
-            Un representante se comunicará con vos a la brevedad.
-            """)
+📝 Detalle: {reclamo['descripcion']}
+📌 Contacto: {datos['nombre']} - {datos['email']} - {datos['telefono']}
+🆔 Número de caso: **{nro}**
+Un representante se comunicará con vos a la brevedad.
+""")
             st.session_state.estado = "reiniciar"
             st.rerun()
-
-    elif estado == "turno_fecha":
-        fecha = st.date_input("📅 Seleccioná el día del turno:", min_value=datetime.now().date())
-        if st.button("📌 Confirmar fecha"):
-            mostrar_mensaje("user", fecha.strftime('%d/%m/%Y'))
-            st.session_state.datos["fecha"] = fecha.strftime('%d/%m/%Y')
-            st.session_state.estado = "turno_horario"
-            st.rerun()
-
-    elif estado == "turno_horario":
-        hora = st.radio("🕒 Seleccioná un horario:", ["10:00", "11:30", "13:00"])
-        if st.button("📌 Confirmar horario"):
-            mostrar_mensaje("user", hora)
-            st.session_state.datos["hora"] = hora
-            st.session_state.estado = "turno_datos_paciente"
-            st.rerun()
-
-    elif estado == "turno_datos_paciente":
-        nombre = st.text_input("🧑 Nombre y apellido")
-        dni = st.text_input("🆔 DNI (solo números)")
-        email = st.text_input("📧 Email")
-
-        errores = []
-        if dni and not dni.isdigit():
-            errores.append("El DNI debe contener solo números.")
-        if email and "@" not in email:
-            errores.append("El email no parece válido.")
-
-        for e in errores:
-            st.error(e)
-
-        if st.button("📋 Confirmar turno"):
-            if nombre and dni.isdigit() and "@" in email:
-                st.session_state.datos["nombre"] = nombre
-                st.session_state.datos["dni"] = dni
-                st.session_state.datos["email"] = email
-
-                mostrar_mensaje("user", f"{nombre}, {dni}, {email}")
-                guardar_turno(st.session_state.datos)
-
-                d = st.session_state.datos
-                mostrar_mensaje("bot", f"✅ Turno confirmado para **{d['nombre']}**, con la especialidad **{d['especialidad']}** el **{d['fecha']}** a las **{d['hora']} hs**. Se enviará un recordatorio a: **{d['email']}**")
-                st.session_state.estado = "reiniciar"
-                st.rerun()
 
     elif estado == "consulta_turnos":
         st.markdown("### 🔍 Consultá tus registros agendados")
         dato = st.text_input("Ingresá tu DNI o correo electrónico:")
 
         if st.button("📂 Buscar mis registros"):
-            if dato:
-                from data_manager import buscar_turnos_por_identificacion
-                from data_manager import buscar_reclamos_por_identificacion
-                from data_manager import buscar_clases_rcp_por_identificacion
+            turnos = buscar_turnos_por_identificacion(dato)
+            reclamos = buscar_reclamos_por_identificacion(dato)
+            clases = buscar_clases_rcp_por_identificacion(dato)
 
-                turnos = buscar_turnos_por_identificacion(dato)
-                reclamos = buscar_reclamos_por_identificacion(dato)
-                clases = buscar_clases_rcp_por_identificacion(dato)
+            if turnos:
+                st.markdown("#### 📅 Turnos:")
+                for i, t in enumerate(turnos, 1):
+                    st.markdown(f"- **{t['especialidad']}** el {t['fecha']} a las {t['hora']} hs – {t['nombre']}")
 
-                if turnos:
-                    st.markdown("#### 📅 Turnos:")
-                    for i, t in enumerate(turnos, 1):
-                        st.markdown(f"- **{t['especialidad']}** el {t['fecha']} a las {t['hora']} hs – {t['nombre']}")
+            if reclamos:
+                st.markdown("#### 📝 Reclamos:")
+                for r in reclamos:
+                    st.markdown(f"- {r['tipo']} – {r['descripcion']} (Caso: {r['nro_caso']})")
 
-                if reclamos:
-                    st.markdown("#### 📝 Reclamos:")
-                    for r in reclamos:
-                        st.markdown(f"- {r['tipo']} – {r['descripcion']} (Caso: {r['nro_caso']})")
+            if clases:
+                st.markdown("#### ❤️ Clases de RCP:")
+                for c in clases:
+                    st.markdown(f"- {c['fecha_clase']} a las {c['hora']} hs – {c['nombre']}")
 
-                if clases:
-                    st.markdown("#### ❤️ Clases de RCP:")
-                    for c in clases:
-                        st.markdown(f"- {c['fecha_clase']} a las {c['hora']} hs – {c['nombre']}")
-
-                if not turnos and not reclamos and not clases:
-                    st.info("🤖 No se encontraron registros con ese dato.")
+            if not turnos and not reclamos and not clases:
+                st.info("🤖 No se encontraron registros con ese dato.")
 
         if st.button("🔁 Volver al menú principal"):
             st.session_state.estado = "menu"
             st.rerun()
 
-
     elif estado == "reiniciar":
         st.markdown("¿Querés hacer otra consulta?")
-        if st.button("🔁 Volver al menú"):
-            st.session_state.estado = "menu"
-            st.session_state.datos = {}
-            st.rerun()
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("🔁 Volver al menú"):
+                st.session_state.estado = "menu"
+                st.session_state.datos = {}
+                st.rerun()
+        with col2:
+            if st.button("🚪 Salir del asistente"):
+                st.session_state.estado = "salida"
+                st.rerun()
 
     elif estado == "salida":
-        st.markdown("<h4>👋 ¡Gracias por usar SaludBOT!</h4>", unsafe_allow_html=True)
+        st.markdown(
+            """<div style='text-align: center;'>
+                <img src='https://img.icons8.com/emoji/96/robot-emoji.png' width='70'/>
+                <h2 style='color:#4A90E2;'>👋 ¡Gracias por usar SaludBOT!</h2>
+                <p>Tu asistente virtual de la <strong>Clínica SanVida</strong>.</p>
+                <p>Esperamos verte pronto. Podés cerrar esta ventana cuando quieras 😊</p>
+            </div>""",
+            unsafe_allow_html=True
+        )
         st.stop()
