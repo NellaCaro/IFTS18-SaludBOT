@@ -3,7 +3,7 @@ import pandas as pd
 import streamlit as st
 from datetime import datetime
 
-# Ruta de los archivos CSV
+# Rutas de los archivos CSV
 DATA_DIR = "data"
 TURNOS_CSV = os.path.join(DATA_DIR, "turnos.csv")
 RECLAMOS_CSV = os.path.join(DATA_DIR, "reclamos.csv")
@@ -65,7 +65,7 @@ def guardar_inscripcion_rcp(nombre, dni, email):
         "nombre": nombre,
         "dni": dni,
         "email": email,
-        "fecha_clase": "2024-05-30",
+        "fecha_clase": "2024-06-12",
         "hora": "17:00",
         "timestamp": datetime.now().isoformat()
     }])
@@ -76,26 +76,19 @@ def guardar_inscripcion_rcp(nombre, dni, email):
         df = nuevo
     df.to_csv(RCP_CSV, index=False)
 
-def obtener_turnos_por_dni_o_email(valor):
-    if not os.path.exists(TURNOS_CSV):
-        return []
-    df = pd.read_csv(TURNOS_CSV)
-    return df[(df["dni"] == valor) | (df["email"] == valor)].to_dict(orient="records")
-
 def buscar_turnos_por_identificacion(valor):
-    """Devuelve turnos guardados por DNI o email"""
     if not os.path.exists(TURNOS_CSV):
         return []
-
     df = pd.read_csv(TURNOS_CSV)
-    resultado = df[(df["dni"].astype(str) == str(valor)) | (df["email"].str.lower() == str(valor).lower())]
-    return resultado.to_dict(orient="records")
+    return df[(df["dni"].astype(str) == str(valor)) | (df["email"].str.lower() == str(valor).lower())].to_dict(orient="records")
 
 def buscar_reclamos_por_identificacion(valor):
     if not os.path.exists(RECLAMOS_CSV):
         return []
     df = pd.read_csv(RECLAMOS_CSV)
-    return df[(df["dni"].astype(str) == str(valor)) | (df["email"].str.lower() == str(valor).lower())].to_dict(orient="records")
+    return df[(df["telefono"].astype(str) == str(valor)) | 
+              (df["email"].str.lower() == str(valor).lower()) |
+              (df["nombre"].str.lower().str.contains(str(valor).lower()))].to_dict(orient="records")
 
 def buscar_clases_rcp_por_identificacion(valor):
     if not os.path.exists(RCP_CSV):
