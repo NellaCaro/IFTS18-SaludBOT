@@ -26,9 +26,20 @@ if not st.session_state.comenzar:
     st.markdown("<h4 style='text-align: center;'>Tu asistente virtual de la Clínica SanVida</h4>", unsafe_allow_html=True)
     st.markdown("<hr>", unsafe_allow_html=True)
 
+    # Saludo dinámico según la hora
+    hora = datetime.now().hour
+    if 6 <= hora < 13:
+        saludo = "☀️ ¡Buenos días!"
+    elif 13 <= hora < 20:
+        saludo = "🌇 ¡Buenas tardes!"
+    else:
+        saludo = "🌙 ¡Buenas noches!"
+
+    st.markdown(f"<p style='text-align: center; font-size: 20px;'>{saludo}</p>", unsafe_allow_html=True)
+
     # Texto de bienvenida
     st.markdown("Estoy disponible **24/7** para ayudarte a gestionar turnos médicos, estudios, clases de RCP y reclamos.")
-    st.markdown("Por favor, hacé clic en el botón para comenzar 😊")
+    st.markdown("Si necesitás asistencia, simplemente hacé clic en el botón de abajo para comenzar. ¡Estoy aquí para ayudarte! 😊")
 
     # Botón de comenzar (¡con buena indentación!)
     if st.button("👉 Comenzar"):
