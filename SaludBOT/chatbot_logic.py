@@ -125,6 +125,38 @@ Un representante se comunicará con vos a la brevedad.
         if st.button("🔁 Volver al menú principal"):
             st.session_state.estado = "menu"
             st.rerun()
+    
+    elif estado == "rcp_info":
+        if "rcp_info_mostrada" not in st.session_state:
+            mostrar_mensaje("bot", "❤️ La próxima clase de **RCP** será el **jueves 30 de mayo** en el **SUM de Clínica SanVida** a las **17:00 hs**. Aprenderás a asistir a una persona con paro cardiorrespiratorio, aplicar compresiones efectivas y utilizar un DEA.")
+            st.session_state.rcp_info_mostrada = True
+            st.rerun()
+
+        elif "rcp_datos_pendientes" not in st.session_state:
+            if st.button("📝 Inscribirme a la clase"):
+                mostrar_mensaje("user", "Quiero inscribirme")
+                st.session_state.rcp_datos_pendientes = True
+                st.rerun()
+
+        elif "rcp_confirmado" not in st.session_state:
+            nombre = st.text_input("🧑 Nombre y apellido", key="rcp_nombre")
+            dni = st.text_input("🆔 DNI (sin puntos ni letras)", key="rcp_dni")
+            email = st.text_input("📧 Correo electrónico", key="rcp_email")
+
+            if dni and not dni.isdigit():
+                st.error("El DNI debe contener solo números.")
+
+            if st.button("📋 Confirmar inscripción", key="confirmar_rcp"):
+                if nombre and dni.isdigit() and email:
+                    from data_manager import guardar_inscripcion_rcp
+                    guardar_inscripcion_rcp(nombre, dni, email)
+
+                    mostrar_mensaje("user", f"Nombre: {nombre}, DNI: {dni}, Email: {email}")
+                    mostrar_mensaje("bot", f"✅ ¡Inscripción confirmada! Te esperamos el **jueves 30 de mayo** en el SUM de Clínica SanVida. Se enviará un recordatorio a **{email}**.")
+                    st.session_state.rcp_confirmado = True
+                    st.session_state.estado = "reiniciar"
+                    st.rerun()
+
 
     elif estado == "reiniciar":
         st.markdown("¿Querés hacer otra consulta?")
