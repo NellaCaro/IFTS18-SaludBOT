@@ -209,7 +209,8 @@ Un representante se comunicará con vos a la brevedad.""")
             if turnos:
                 st.markdown("#### 📅 Turnos:")
                 for i, t in enumerate(turnos, 1):
-                    st.markdown(f"- **{t['especialidad']}** el {t['fecha']} a las {t['hora']} hs – {t['nombre']}")
+                    hora_turno = t.get("hora") or t.get("horario") or "🕒 (sin horario)"
+                    st.markdown(f"- **{t['especialidad']}** el {t['fecha']} a las {hora_turno} hs – {t['nombre']}")
 
             if reclamos:
                 st.markdown("#### 📝 Reclamos:")
