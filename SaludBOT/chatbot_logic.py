@@ -94,6 +94,15 @@ def manejar_estado():
             """)
             st.session_state.estado = "reiniciar"
             st.rerun()
+    elif estado == "estudios_tipo":
+        estudio = st.radio("¿Qué estudio necesitás?", [
+            "Laboratorio general", "ECG", "Radiografía", "Ecografía", "Chequeo completo"
+        ])
+        if st.button("📈 Confirmar estudio"):
+            mostrar_mensaje("user", estudio)
+            st.session_state.datos = {"especialidad": estudio}
+            st.session_state.estado = "turno_fecha"
+            st.rerun()
 
     elif estado == "consulta_turnos":
         st.markdown("### 🔍 Consultá tus registros agendados")
